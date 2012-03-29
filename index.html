@@ -28,9 +28,29 @@
     <style type="text/css">
     	@import url('http://data.minnpost.s3.amazonaws.com/js/datatables-1.9.0/css/jquery.dataTables.css');
     </style>
+    <style type="text/css">
+      .amendment-cat-icons ul li {
+        float: left;
+        list-style-type: none;
+        width: 40%;
+      }
+    </style>
     
     
     <!-- Content -->
+    <div class="amendment-cat-icons">
+      <ul>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/structure-of-government.png" alt="capital icon" width="25" height="25">Structure of Government</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/judicial-branch.png" alt="capital icon" width="25" height="25">Judicial Branch</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/environment-land-use.png" alt="capital icon" width="25" height="25">Environment &amp; Land Use</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/gambling-vice.png" alt="capital icon" width="25" height="25">Gambling &amp; Vice</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/highways-transit.png" alt="capital icon" width="25" height="25">Highways &amp; Transit</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/elections.png" alt="capital icon" width="25" height="25">Elections</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/revenue-spending.png" alt="capital icon" width="25" height="25">Revenue &amp; Spending</a></li>
+        <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/economy.png" alt="factory icon" width="25" height="25"> Economy</a></li>
+      </ul>
+    </div>
+    
     <table>
       <thead>
         <tr>
@@ -43,6 +63,8 @@
         </tr>
       </thead>
     </table>
+    
+    </div><p style="clear: both;"><span class="caption">'Scale' symbol by The Noun Project, 'Leaf' symbol by Fellipe Silva, 'Capitol' symbol by John Keating, 'Dice' symbol by The Noun Project, from </span><a class="caption" href="http://thenounproject.com">The Noun Project collection.</a></p></div>
     
     
     <!-- Scripts -->
@@ -58,6 +80,7 @@
        * Document ready event.
        */
       $(document).ready(function() {
+        var categories = {};
         
         // Table making (remove for production)
         $.getJSON('data/mn-amendments-vals.json', function(data) {
@@ -71,28 +94,45 @@
             
             return value;
           };
+          function renderCategoryClass(value) {
+            return value.toString().toLowerCase().replace('&', '-').replace(' ', '-').replace(' ', '-').replace(' ', '-').replace(' ', '-');
+          };
+          function addCategory(key, value) {
+            if (typeof categories[key] == 'undefined') {
+              categories[key] = value;
+            }
+          }
           
           var table = $('<table></table>');
           var rows = '';
           for (var i in data) {
             if (typeof data[i]["Category"] != undefined) {
               var row = '';
-              row += '\n                <tr>';
+              addCategory(renderCategoryClass(data[i]['Category']), data[i]["Category"]);
+              
+              row += '\n                <tr class="' + renderCategoryClass(data[i]['Category']) + '">';
               row += '\n                  <td class="year">' + data[i]['Year'] + '</td>';
               row += '\n                  <td class="category">' + data[i]['Category'] + '</td>';
               row += '\n                  <td class="purpose">' + data[i]['Purpose'] + '</td>';
               row += '\n                  <td class="adopted">' + renderApproval(data[i]['Adopted or Rejected']) + '</td>';
               row += '\n                  <td class="approval">' + data[i]['percent_appr'] + '</td>';
-              row += '\n                  <td class="ballot-language"><a href="' + data[i]['url'] + '">' + data[i]['ballot_language'] + '</a></td>';
+              row += '\n                  <td class="ballot-language"><a target=”_blank” href="' + data[i]['url'] + '">' + data[i]['ballot_language'] + '</a></td>';
               row += '\n                </tr>';
               rows += row;
             }
           }
+
           $('#minndata-embed table').append($(rows));
           
           // DataTable
-          $('#minndata-embed table').dataTable({
+          var amendmentTable = $('#minndata-embed table').dataTable({
             'aaSorting': [[ 0, 'asc' ]]
+          });
+          
+          // Add filter links
+          $('.amendment-cat-icons a').click(function(e) {
+            e.preventDefault();
+            amendmentTable.fnFilter($(this).text(), 1);
           });
         });
       });
