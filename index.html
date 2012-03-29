@@ -34,14 +34,14 @@
     <table>
       <thead>
         <tr>
-          <th>heading</th>
+          <th>Year</th>
+          <th>Category</th>
+          <th>Purpose</th>
+          <th>Adopted</th>
+          <th>Approval</th>
+          <th>Ballot Language</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>a</td>
-        </tr>
-      </tbody>
     </table>
     
     
@@ -57,12 +57,43 @@
       /**
        * Document ready event.
        */
-      $(document).ready(function() {  
-        // DataTable
-        $('#minndata-embed table').dataTable({
-          'aaSorting': [[ 0, 'asc' ]],
-          'aLengthMenu': [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-          'iDisplayLength': 5
+      $(document).ready(function() {
+        
+        // Table making (remove for production)
+        $.getJSON('data/mn-amendments-vals.json', function(data) {
+          function renderApproval(value) {
+            if (value == 'A') {
+              value = 'Y';
+            }
+            if (value == 'R') {
+              value = 'N';
+            }
+            
+            return value;
+          };
+          
+          var table = $('<table></table>');
+          var rows = '';
+          for (var i in data) {
+            if (typeof data[i]["Category"] != undefined) {
+              var row = '';
+              row += '\n                <tr>';
+              row += '\n                  <td class="year">' + data[i]['Year'] + '</td>';
+              row += '\n                  <td class="category">' + data[i]['Category'] + '</td>';
+              row += '\n                  <td class="purpose">' + data[i]['Purpose'] + '</td>';
+              row += '\n                  <td class="adopted">' + renderApproval(data[i]['Adopted or Rejected']) + '</td>';
+              row += '\n                  <td class="approval">' + data[i]['percent_appr'] + '</td>';
+              row += '\n                  <td class="ballot-language"><a href="' + data[i]['url'] + '">' + data[i]['ballot_language'] + '</a></td>';
+              row += '\n                </tr>';
+              rows += row;
+            }
+          }
+          $('#minndata-embed table').append($(rows));
+          
+          // DataTable
+          $('#minndata-embed table').dataTable({
+            'aaSorting': [[ 0, 'asc' ]]
+          });
         });
       });
       
