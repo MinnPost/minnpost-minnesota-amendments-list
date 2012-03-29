@@ -32,13 +32,89 @@
       .amendment-cat-icons ul li {
         float: left;
         list-style-type: none;
-        width: 40%;
+        width: 32%;
+        margin-bottom: 10px;
+      }
+      .amendment-cat-icons ul li img {
+        margin-right: 1em;
+        margin-bottom: -7px;
+      }
+      p.footnote {
+        margin-top: 4em;
+        font-style: italic;
+      }
+      .amendment-cat-icons {
+        min-height: 12em;
+      }
+      
+      body table.dataTable tr.odd,
+      body table.dataTable tr.odd td.sorting_1 {
+        background-color: #FDFDFD;
+      }
+      body table.dataTable tr.even,
+      body table.dataTable tr.even td.sorting_1 {
+        background-color: #EDEDED;
+      }
+      
+      table td.leaning-dfl,
+      body table.dataTable td.leaning-dfl,
+      body table.dataTable tr td.leaning-dfl.sorting_1 {
+        background-color: #809FBC;
+        background-color: #A8BDD1;
+      }
+      table td.leaning-r,
+      body table.dataTable td.leaning-r,
+      body table.dataTable tr td.leaning-r.sorting_1 {
+        background-color: #A75859;
+        background-color: #B9797A;
+      }
+      .dataTables_length,
+      .dataTables_filter,
+      .dataTables_info,
+      .dataTables_paginate,
+      .table-help {
+        color: #888888;
+        font-size: 80%;
+      }
+      
+      body table.dataTable tr td.category {
+        text-indent: -3000px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        white-space: nowrap;
+        overflow: hidden;
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/show-all.png');
+      }
+      body table.dataTable tr.structure-of-government td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/structure-of-government.png');
+      }
+      body table.dataTable tr.judicial-branch td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/judicial-branch.png');
+      }
+      body table.dataTable tr.environment---land-use td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/environment-land-use.png');
+      }
+      body table.dataTable tr.gambling---vice td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/gambling-vice.png');
+      }
+      body table.dataTable tr.highways---transit td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/highways-transit.png');
+      }
+      body table.dataTable tr.elections td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/elections.png');
+      }
+      body table.dataTable tr.revenue---spending td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/revenue-spending.png');
+      }
+      body table.dataTable tr.economy td.category {
+        background-image: url('http://www.minnpost.com/sites/default/files/images/articles/icons/economy.png');
       }
     </style>
     
     
     <!-- Content -->
     <div class="amendment-cat-icons">
+      <p>Click on the following categories to filter the results.</p>
       <ul>
         <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/structure-of-government.png" alt="capital icon" width="25" height="25">Structure of Government</a></li>
         <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/judicial-branch.png" alt="capital icon" width="25" height="25">Judicial Branch</a></li>
@@ -48,6 +124,7 @@
         <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/elections.png" alt="capital icon" width="25" height="25">Elections</a></li>
         <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/revenue-spending.png" alt="capital icon" width="25" height="25">Revenue &amp; Spending</a></li>
         <li><a href="#filter"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/economy.png" alt="factory icon" width="25" height="25"> Economy</a></li>
+        <li><a href="#filter" class="filter-clear"><img src="http://www.minnpost.com/sites/default/files/images/articles/icons/show-all.png" alt="show all" width="25" height="25"> Show All</a></li>
       </ul>
     </div>
     
@@ -1795,52 +1872,6 @@
        * Document ready event.
        */
       $(document).ready(function() {
-        /*
-        var categories = {};
-        // Table making (remove for production)
-        $.getJSON('data/mn-amendments-vals.json', function(data) {
-          function renderApproval(value) {
-            if (value == 'A') {
-              value = 'Y';
-            }
-            if (value == 'R') {
-              value = 'N';
-            }
-            
-            return value;
-          };
-          function renderCategoryClass(value) {
-            return value.toString().toLowerCase().replace('&', '-').replace(' ', '-').replace(' ', '-').replace(' ', '-').replace(' ', '-');
-          };
-          function addCategory(key, value) {
-            if (typeof categories[key] == 'undefined') {
-              categories[key] = value;
-            }
-          }
-          
-          var table = $('<table></table>');
-          var rows = '';
-          for (var i in data) {
-            if (typeof data[i]["Category"] != undefined) {
-              var row = '';
-              addCategory(renderCategoryClass(data[i]['Category']), data[i]["Category"]);
-              
-              row += '\n                <tr class="' + renderCategoryClass(data[i]['Category']) + '">';
-              row += '\n                  <td class="year">' + data[i]['Year'] + '</td>';
-              row += '\n                  <td class="category">' + data[i]['Category'] + '</td>';
-              row += '\n                  <td class="purpose">' + data[i]['Purpose'] + '</td>';
-              row += '\n                  <td class="adopted">' + renderApproval(data[i]['Adopted or Rejected']) + '</td>';
-              row += '\n                  <td class="approval">' + data[i]['percent_appr'] + '</td>';
-              row += '\n                  <td class="ballot-language"><a target=_blank href="' + data[i]['url'] + '">' + data[i]['ballot_language'] + '</a></td>';
-              row += '\n                </tr>';
-              rows += row;
-            }
-          }
-
-          $('#minndata-embed table').append($(rows));
-        });
-        */
-          
         // DataTable
         var amendmentTable = $('#minndata-embed table').dataTable({
           'aaSorting': [[ 0, 'asc' ]]
@@ -1849,7 +1880,12 @@
         // Add filter links
         $('.amendment-cat-icons a').click(function(e) {
           e.preventDefault();
-          amendmentTable.fnFilter($(this).text(), 1);
+          if ($(this).hasClass('filter-clear')) {
+            amendmentTable.fnFilter('', 1);
+          }
+          else {
+            amendmentTable.fnFilter($(this).text(), 1);
+          }
         });
       });
       
